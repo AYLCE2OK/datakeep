@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data kepper</title>
+    <style>
+    /* style.css */
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 500px;
+}
+
+h1 {
+    text-align: center;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.todo-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.todo-input input {
+    width: 75%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.todo-input button {
+    padding: 10px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.todo-input button:hover {
+    background-color: #218838;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #e9f5e9;
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px;
+}
+
+li.completed {
+    text-decoration: line-through;
+    background-color: #d1f1d1;
+}
+
+li button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+li button:hover {
+    background-color: #c82333;
+}
+img{
+    margin-left: 160px;
+   }
+
+ </style>
+</head>
+<body>
+    
+    <div class="container">
+        
+      <img src="DATA_KEPPER-removebg-preview.png" width="150px" alt="">
+        <div class="todo-input">
+            <input type="text" id="taskInput" placeholder="Add data.........................">
+            <button onclick="addTask()">Add</button>
+        </div>
+        <ul id="todoList">
+            <!-- Tasks will be added here -->
+        </ul>
+    </div>
+
+    <script>
+        // script.js
+
+// Load tasks from local storage
+function loadTasks() {
+    return JSON.parse(localStorage.getItem('tasks')) || [];
+}
+
+// Save tasks to local storage
+function saveTasks(tasks) {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+// Render the tasks from local storage
+function renderTasks() {
+    const taskList = document.getElementById('todoList');
+    taskList.innerHTML = ''; // Clear current tasks
+
+    const tasks = loadTasks();
+    tasks.forEach((task, index) => {
+        const listItem = document.createElement('li');
+        listItem.classList.toggle('completed', task.completed);
+
+        const taskSpan = document.createElement('span');
+        taskSpan.textContent = task.text;
+
+        // "Refuse" button (was "Complete")
+        const refuseButton = document.createElement('button');
+        refuseButton.textContent = 'Refuse';
+        refuseButton.onclick = () => toggleCompleteTask(index);
+
+        // "Complete" button (was "Delete")
+        const completeButton = document.createElement('button');
+        completeButton.textContent = 'Complete';
+        completeButton.onclick = () => deleteTask(index);
+
+        listItem.appendChild(refuseButton);
+        listItem.appendChild(taskSpan);
+        listItem.appendChild(completeButton);
+
+        taskList.appendChild(listItem);
+    });
+}
+
+// Add a new task
+function addTask() {
+    const taskInput = document.getElementById('taskInput');
+    const taskText = taskInput.value.trim();
+
+    if (taskText === '') {
+        alert('Please enter a task!');
+        return;
+    }
+
+    const tasks = loadTasks();
+    tasks.push({ text: taskText, completed: false });
+    saveTasks(tasks);
+    renderTasks();
+
+    taskInput.value = ''; // Clear the input field
+}
+
+// Toggle the completion status of a task
+function toggleCompleteTask(index) {
+    const tasks = loadTasks();
+    tasks[index].completed = !tasks[index].completed; // Toggle completion status
+    saveTasks(tasks);
+    renderTasks();
+}
+
+// Delete a task (labelled as "Complete")
+function deleteTask(index) {
+    const tasks = loadTasks();
+    tasks.splice(index, 1); // Remove task at the given index
+    saveTasks(tasks);
+    renderTasks();
+}
+
+// Load and render tasks on page load
+window.onload = () => {
+    renderTasks();
+};
+
+    </script>
+</body>
+</html>
